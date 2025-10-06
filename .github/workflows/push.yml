@@ -1,10 +1,15 @@
 name: golang-build-actions-workflow
 on:
   push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-      
+    # # Sequence of patterns matched against refs/tags
+    # tags:
+    #   - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
 permissions:
     contents: write
     
@@ -12,25 +17,38 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest] # , ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.25.0' # The Go version to download (if necessary) and use.
+      # - name: Setup go
+      #   uses: actions/setup-go@v6.0.0
+      #   with:
+      #     go-version: '1.25.0' # The Go version to download (if necessary) and use.
           
-      - run: go get .
+      # - run: go get .
       
-      - run: go build
+      # - run: go build
+      - shell: cmd
+        run: |
+          .\setup.cmd
       
+      - shell: cmd
+        run: |
+          .\local-build.cmd
+
+      - shell: cmd
+        run: |
+          .\${{ github.event.repository.name }}.exe
+          
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          path: ${{ github.event.repository.name }}*
+          path: |
+            ${{ github.event.repository.name }}*
+            libclang.dll
           filename: "${{ github.event.repository.name }}-${{ github.ref_name }}-${{ matrix.os }}.zip"
           
       - name: Release prebuilt

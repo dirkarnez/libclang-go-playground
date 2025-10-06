@@ -1,1 +1,3 @@
 *.exe
+lib/LLVM-21.1.2-win64
+libclang.dll
