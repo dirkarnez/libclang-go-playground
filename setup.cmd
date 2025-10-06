@@ -11,7 +11,7 @@ set LIBCLANG_DLL=%LLVM_DIR%\bin\libclang.dll
 if not exist %LIBCLANG_DLL% (
 cd /d "%TEMP%" &&^
 %SystemRoot%\System32\curl.exe "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.2/LLVM-21.1.2-win64.exe" -L -O  &&^
-%SEVENZIP% e LLVM-21.1.2-win64.exe -o"%LLVM_DIR%"  &&^
+%SEVENZIP% e LLVM-21.1.2-win64.exe -o"%LLVM_DIR%" -y &&^
 del LLVM-21.1.2-win64.exe
 )
 
